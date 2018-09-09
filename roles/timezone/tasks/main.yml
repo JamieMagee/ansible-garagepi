@@ -1,0 +1,4 @@
+---
+- name: Set the timezone
+  timezone:
+    name: "{{ timezone.region }}/{{ timezone.city }}"

@@ -1,0 +1,45 @@
+- name: Install ufw
+  pacman:
+    name: ufw
+  tags:
+    - firewall
+
+- name: Enable and start ufw systemd service
+  systemd:
+    name: ufw.service
+    enabled: true
+    state: started
+  tags:
+    - firewall
+
+- name: Enable ufw
+  ufw:
+    state: enabled
+    policy: deny
+  tags:
+    - firewall
+
+- name: Enable ufw rules
+  ufw:
+    rule: allow
+    name: '{{ item }}'
+  with_items:
+    - SSH
+  tags:
+    - firewall
+
+- name: Add custom ufw rules
+  template:
+    src: custom.j2
+    dest: /etc/ufw/applications.d/custom
+  tags:
+    - firewall
+
+# - name: Enable custome limit rules
+#   ufw:
+#     rule: limit
+#     name: '{{ item }}'
+#   with_items:
+#     - 
+#   tags:
+#     - firewall

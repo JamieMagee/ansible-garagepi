@@ -1,0 +1,24 @@
+---
+- name: Install sudo
+  pacman:
+    name: sudo
+  tags:
+    - sudo
+
+- name: Add user to wheel group
+  user:
+    name: "{{ user.name }}"
+    groups: wheel
+    append: true
+  tags:
+    - sudo
+    - user
+
+- name: Copy sudo configuration
+  template:
+    src: sudoers.j2
+    dest: /etc/sudoers
+    mode: 0440
+    validate: 'visudo -cf %s'
+  tags:
+    - sudo

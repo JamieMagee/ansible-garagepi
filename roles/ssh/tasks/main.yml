@@ -1,0 +1,53 @@
+---
+- name: Install OpenSSH
+  pacman:
+    name: openssh
+
+- name: Push OpenSSH daemon configuration file
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+
+- name: Create OpenSSH systemd unit file directory
+  file:
+    path: /etc/systemd/system/sshd.socket.d
+    state: directory
+
+- name: Push OpenSSH socket unit file
+  copy:
+    src: sshd-socket-override.conf
+    dest: /etc/systemd/system/sshd.socket.d/override.conf
+  notify:
+    - restart sshd
+
+- name: Create ssh folder
+  file:
+    path: /home/{{ user.name }}/.ssh
+    state: directory
+
+- name: Add authorized_keys file
+  copy:
+    src: authorized_keys
+    dest: /home/{{ user.name }}/.ssh/authorized_keys
+    owner: '{{ user.name }}'
+    group: '{{ user.group }}'
+    mode: 0644
+
+- name: Enable and start OpenSSH
+  systemd:
+    name: sshd.socket
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Copy fuse configuration file
+  copy:
+    src: fuse.conf
+    dest: /etc/fuse.conf
+
+- name: Make directory for user SSH key
+  file:
+    path: /home/{{ user.name }}/.ssh
+    state: directory
+    owner: '{{ user.name }}'
+    group: '{{ user.group }}'

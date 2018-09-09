@@ -1,0 +1,33 @@
+---
+- name: Install docker
+  pacman:
+    name: docker
+
+- name: Add user to docker group
+  user:
+    name: "{{ user.name }}"
+    groups: docker
+    append: true
+  tags:
+    - user
+
+- name: Enable and start docker service
+  systemd:
+    name: docker.service
+    enabled: true
+    state: started
+
+- name: Install docker prune service and timer
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+  with_items:
+    - docker-prune.service
+    - docker-prune.timer
+
+- name: Enable and start docker prune timer
+  systemd:
+    name: docker-prune.timer
+    enabled: true
+    state: started
+    daemon_reload: true

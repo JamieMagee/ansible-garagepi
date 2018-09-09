@@ -1,0 +1,36 @@
+timezone:
+  hwclock: UTC
+  region: Europe
+  city: Copenhagen
+
+locale:
+  system: en_GB.UTF-8
+  generate:
+    - en_GB.UTF-8
+    - en_US.UTF-8
+    - da_DK.UTF-8
+
+user:
+  name: garage
+  uid: 1001
+  group: garage
+  log:
+    dir: log
+    rotate: 8
+
+hostname: garage
+
+base_packages:
+  - base
+  - base-devel
+
+passwordless_sudo:
+  - /usr/bin/docker
+
+aur:
+  dir: aur
+  packages:
+    - yay
+
+journal:
+  max_size: 500M

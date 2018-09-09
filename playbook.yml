@@ -1,0 +1,12 @@
+- hosts: all
+  become: true
+  roles:
+    - { role: timezone, tags: ['timezone'] }
+    - { role: locale, tags: ['locale'] }
+    - { role: hostname, tags: ['hostname'] }
+    - { role: base, tags: ['base'] }
+    - { role: ssh, tags: ['ssh'] }
+    - { role: firewall, tags: ['firewall'] }
+    - { role: ntp, tags: ['ntp'] }
+    - { role: docker, tags: ['docker'] }
+    - { role: docker-compose, tags: ['docker-compose'] }

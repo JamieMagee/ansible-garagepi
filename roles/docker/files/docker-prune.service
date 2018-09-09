@@ -1,0 +1,11 @@
+[Unit]
+Description=Prune unused docker images and volumes
+
+[Service]
+Type=oneshot
+
+ExecStart=/usr/bin/docker image prune --all --force
+ExecStart=/usr/bin/docker volume prune --force
+
+[Install]
+WantedBy=multi-user.target

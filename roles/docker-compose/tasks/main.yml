@@ -1,0 +1,37 @@
+---
+- name: Install docker-compose
+  pacman:
+    name: docker-compose
+
+- name: Ensure docker-compose directory exists
+  file:
+    path: /etc/compose
+    state: directory
+
+- name: Copy docker-compose.yml
+  copy:
+    src: docker-compose.yml
+    dest: /etc/compose/docker-compose.yml
+
+- name: Copy docker-compose services
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+  with_items:
+    - docker-compose.service
+    - docker-compose-reload.service
+    - docker-compose-reload.timer
+
+- name: Enable docker-compose.service
+  systemd:
+    name: docker-compose.service
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Enable docker-compose-reload.timer
+  systemd:
+    name: docker-compose-reload.timer
+    enabled: true
+    state: started
+    daemon_reload: true

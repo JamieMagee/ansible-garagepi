@@ -1,0 +1,90 @@
+- name: Initialise the pacman keyring
+  command: /usr/bin/pacman-key --init
+  tags:
+    - packages
+
+- name: Populate the pacman keyring from the archlinux keying
+  command: /usr/bin/pacman-key --populate archlinuxarm
+  tags:
+    - packages
+
+- name: Refresh package list and upgrade system
+  pacman:
+    upgrade: true
+    update_cache: true
+  tags:
+    - packages
+
+- name: Install universal base packages
+  pacman:
+    name: '{{ item }}'
+  with_items: '{{ base_packages }}'
+  tags:
+    - packages
+
+- name: Create pacman hook directory
+  file:
+    path: /etc/pacman.d/hooks
+    state: directory
+  tags:
+    - packages
+
+- name: Use all cores when compressing packages
+  lineinfile:
+    dest: /etc/makepkg.conf
+    regexp: '^COMPRESSXZ'
+    line: 'COMPRESSXZ=(xz -c -z - --threads=0)'
+
+- name: Create AUR directory
+  file:
+    path: /home/{{ user.name }}/{{ aur.dir }}
+    state: directory
+    owner: '{{ user.name }}'
+    group: '{{ user.group }}'
+  tags:
+    - aur
+    - packages
+
+- name: Install cower
+  aur:
+    name: cower
+    user: '{{ user.name }}'
+    skip_pgp: true
+  ? become_user
+  tags:
+    - aur
+    - packages
+
+- name: Install AUR base packages
+  aur:
+    name: '{{ item }}'
+    user: '{{ user.name }}'
+  with_items: '{{ aur.packages }}'
+  tags:
+    - aur
+    - packages
+
+- name: Push pacman cache cleanup service
+  copy:
+    src: paccache.service
+    dest: /etc/systemd/system/paccache.service
+  tags:
+    - packages
+
+- name: Push pacman cache cleanup timer
+  copy:
+    src: paccache.timer
+    dest: /etc/systemd/system/paccache.timer
+  notify:
+    - restart paccache
+  tags:
+    - packages
+
+- name: Enable and start pacman cache cleanup timer
+  systemd:
+    name: paccache.timer
+    enabled: true
+    state: started
+    daemon_reload: true
+  tags:
+    - packages

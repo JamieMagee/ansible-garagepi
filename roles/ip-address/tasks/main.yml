@@ -1,0 +1,27 @@
+- name: Copy send-mail script
+  copy:
+    src: send-mail.sh
+    dest: /root/send-mail.sh
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Populate mail variables
+  template:
+    src: .env
+    dest: /root/.env
+    owner: root
+    group: root
+    mode: 0400
+
+- name: Copy systemd service
+  copy:
+    src: send-mail.service
+    dest: /etc/systemd/system/send-mail.service
+
+- name: Enable and start send-mail service
+  systemd:
+    name: send-mail.service
+    enabled: true
+    state: started
+    daemon_reload: true

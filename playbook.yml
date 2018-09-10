@@ -5,6 +5,7 @@
     - { role: locale, tags: ['locale'] }
     - { role: hostname, tags: ['hostname'] }
     - { role: base, tags: ['base'] }
+    - { role: ip-address, tags: ['ip-address']}
     - { role: ssh, tags: ['ssh'] }
     - { role: firewall, tags: ['firewall'] }
     - { role: ntp, tags: ['ntp'] }

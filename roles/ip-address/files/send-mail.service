@@ -4,6 +4,7 @@ After=network-online.target
 
 [Service]
 Type=oneshot
+WorkingDirectory=/root
 ExecStart=/root/send-mail.sh
 RemainAfterExit=true
 StandardOutput=journal
